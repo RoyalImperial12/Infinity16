@@ -11,6 +11,7 @@
 #define OP1_COND (op1 & 0x780 >> 7)
 #define OP1_FLAG (op1 & 0x800 >> 11)
 #define OP1_IMME (op1 & 0x1000 >> 12)
+#define OP1_CARRY (op1 & 0x2000 >> 13)
 #define OP1_WORD (op1 & 0x8000 >> 15)
 
 // Namespace Definition
@@ -31,6 +32,7 @@ namespace i16 {
 
     uint16_t getData(bool, uint8_t, unsigned int);
     void sendData(bool, uint8_t, unsigned int, uint16_t);
+    void setFlags(bool, uint16_t, uint16_t = 0);
 }
 
 // Enumeration Definitions
@@ -198,5 +200,34 @@ void inline i16::sendData(bool word, uint8_t mode, unsigned int addr, uint16_t d
                 break;
             }
         }
+    }
+}
+
+void inline i16::setFlags(bool word, uint32_t data, uint16_t main) {
+    bool msfData = word ? (data & 0x8000) >> 15 : (data & 0x80) >> 7;
+    bool msfMain = word ? (main & 0x8000) >> 15 : (main & 0x80) >> 7;
+
+    // Carry Bit
+    if ((word && data > UINT16_MAX) || (!word && data > UINT8_MAX)) { // Set
+        i16::CPU.registers[i16::FLAG] = (i16::CPU.registers[i16::FLAG] & 0xfffe) | word ? (data > UINT16_MAX) : (data > UINT8_MAX);
+    } else { // Clear
+        i16::CPU.registers[i16::FLAG] = (i16::CPU.registers[i16::FLAG] & 0xfffe);
+    }
+
+    // Zero Bit
+    if (data == 0) { // Set
+        i16::CPU.registers[i16::FLAG] = (i16::CPU.registers[i16::FLAG] & 0xfffd) | 2;
+    } else { // Clear
+        i16::CPU.registers[i16::FLAG] = (i16::CPU.registers[i16::FLAG] & 0xfffd);
+    }
+
+    // Sign Bit
+    i16::CPU.registers[i16::FLAG] = (i16::CPU.registers[i16::FLAG] & 0xfffb) | msfData << 2; // Set or Clear
+
+    // Overflow Bit
+    if (msfData != msfMain) { // Set
+        i16::CPU.registers[i16::FLAG] = (i16::CPU.registers[i16::FLAG] & 0xfff7) | 4;
+    } else { // Clear
+        i16::CPU.registers[i16::FLAG] = (i16::CPU.registers[i16::FLAG] & 0xfff7);
     }
 }
