@@ -9,7 +9,6 @@
 #define OP1_OPG (op1 & 0x7)
 #define OP1_OPCODE (op1 & 0x78 >> 3)
 #define OP1_COND (op1 & 0x780 >> 7)
-#define OP1_FLAG (op1 & 0x800 >> 11)
 #define OP1_IMME (op1 & 0x1000 >> 12)
 #define OP1_CARRY (op1 & 0x2000 >> 13)
 #define OP1_WORD (op1 & 0x8000 >> 15)
@@ -38,10 +37,22 @@ namespace i16 {
 // Enumeration Definitions
 
 enum i16::REGISTERS {
-    IP = 12,
-    BP = 13,
-    SP = 14,
-    FLAG = 15
+    R1,
+    R2,
+    R3,
+    R4,
+    R5,
+    R6,
+    R7,
+    R8,
+    R9,
+    R10,
+    R11,
+    R12,
+    IP,
+    BP,
+    SP,
+    FLAG
 };
 
 enum i16::MODES {

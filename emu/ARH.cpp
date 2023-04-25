@@ -7,6 +7,7 @@
 #define OP2_SECOND (op2 & 0x1e0 >> 5)
 #define OP2_DST (op2 & 0x1e00 >> 9)
 #define OP2_HL (op2 & 0x2000 >> 13)
+#define OP2_FLAG (op2 & 0x4000 >> 14)
 
 // Instructions
 
@@ -261,19 +262,19 @@ void i16::ATHexecute(uint16_t op1) {
     uint16_t op2 = i16::Memory.readWord(i16::CPU.registers[i16::IP]); i16::CPU.registers[i16::IP] += 2;
     switch (OP1_OPCODE) {
         case 0x0: {
-            ADD(OP1_WORD, OP1_CARRY, OP1_FLAG, OP1_IMME, OP2_MAIN, OP2_I2, OP2_SECOND, OP2_DST, OP2_HL);
+            ADD(OP1_WORD, OP1_CARRY, OP2_FLAG, OP1_IMME, OP2_MAIN, OP2_I2, OP2_SECOND, OP2_DST, OP2_HL);
             break;
         }
         case 0x1: {
-            SUB(OP1_WORD, OP1_CARRY, OP1_FLAG, OP1_IMME, OP2_MAIN, OP2_I2, OP2_SECOND, OP2_DST, OP2_HL);
+            SUB(OP1_WORD, OP1_CARRY, OP2_FLAG, OP1_IMME, OP2_MAIN, OP2_I2, OP2_SECOND, OP2_DST, OP2_HL);
             break;
         }
         case 0x2: {
-            MUL(OP1_WORD, OP1_CARRY, OP1_FLAG, OP1_IMME, OP2_MAIN, OP2_I2, OP2_SECOND, OP2_DST, OP2_HL);
+            MUL(OP1_WORD, OP1_CARRY, OP2_FLAG, OP1_IMME, OP2_MAIN, OP2_I2, OP2_SECOND, OP2_DST, OP2_HL);
             break;
         }
         case 0x3: {
-            DIV(OP1_WORD, OP1_CARRY, OP1_FLAG, OP1_IMME, OP2_MAIN, OP2_I2, OP2_SECOND, OP2_DST, OP2_HL);
+            DIV(OP1_WORD, OP1_CARRY, OP2_FLAG, OP1_IMME, OP2_MAIN, OP2_I2, OP2_SECOND, OP2_DST, OP2_HL);
             break;
         }
         case 0x4: {
