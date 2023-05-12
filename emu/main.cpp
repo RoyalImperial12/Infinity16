@@ -78,7 +78,7 @@ void execute() {
         }
     }
     uint16_t op1 = i16::Memory.readWord(i16::CPU.registers[i16::IP]);
-    i16::CPU.registers[i16::IP]++;
+    i16::CPU.registers[i16::IP] += 2;
     if (conditionCheck(OP1_COND)) {
         switch (OP1_OPG) {
             case 0x0: {
