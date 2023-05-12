@@ -91,7 +91,7 @@ public:
         registers[FLAG] == 0x8000;
     }
 
-    std::array<bool, UINT16_MAX + 1> interrupts;
+    std::array<bool, UINT8_MAX + 1> interrupts;
     bool interruptActive;
 
     std::array<uint16_t, UINT8_MAX + 1> ports;
