@@ -11,7 +11,7 @@ void DI() {
 }
 
 void INT() {
-    uint16_t val = i16::Memory.readWord(i16::CPU.registers[i16::IP]); i16::CPU.registers[i16::IP] += 2;
+    uint16_t val = i16::Memory.readByte(i16::CPU.registers[i16::IP]); i16::CPU.registers[i16::IP] ++;
     i16::CPU.interrupts[val] = true;
     i16::CPU.interruptActive = true;
 }
@@ -72,10 +72,17 @@ void RET() {
     i16::CPU.registers[i16::IP] = addr;
 }
 
+void HLT() {
+    exit(0);
+}
+void RST() {
+    i16::CPU.registers[i16::IP] = 0x0;
+}
+
 // Execution
 
 void i16::SYSexecute(uint16_t op1) {
-    switch (op1 & 0xf) {
+    switch (OP1_OPCODE) {
         case 0x0: {
             break;
         }
@@ -92,11 +99,11 @@ void i16::SYSexecute(uint16_t op1) {
             break;
         }
         case 0x4: {
-            IN(op1 & 0x8000 >> 15);
+            IN(OP1_WORD);
             break;
         }
         case 0x5: {
-            OUT(op1 & 0x8000 >> 15);
+            OUT(OP1_WORD);
             break;
         }
         case 0x6: {
@@ -109,6 +116,14 @@ void i16::SYSexecute(uint16_t op1) {
         }
         case 0x8: {
             RET();
+            break;
+        }
+        case 0x9: {
+            HLT();
+            break;
+        }
+        case 0xa: {
+            RST();
             break;
         }
         default: {
