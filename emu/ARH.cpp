@@ -256,6 +256,18 @@ void CMP(bool word, bool imme, uint8_t main, bool imme2, uint8_t second) {
     i16::setFlags(word, res, data1);
 }
 
+void INC(bool word, uint8_t main) {
+    uint16_t data = i16::getData(word, i16::REGISTER_L, main);
+    data++;
+    i16::sendData(data, i16::REGISTER_L, main, data);
+}
+
+void DCR(bool word, uint8_t main) {
+    uint16_t data = i16::getData(word, i16::REGISTER_L, main);
+    data--;
+    i16::sendData(data, i16::REGISTER_L, main, data);
+}
+
 // Executions
 
 void i16::ATHexecute(uint16_t op1) {
@@ -303,6 +315,14 @@ void i16::ATHexecute(uint16_t op1) {
         }
         case 0xa: {
             CMP(OP1_WORD, OP1_IMME, OP2_MAIN, OP2_I2, OP2_SECOND);
+            break;
+        }
+        case 0xb: {
+            INC(OP1_WORD, OP2_MAIN);
+            break;
+        }
+        case 0xc: {
+            DCR(OP1_WORD, OP2_MAIN);
             break;
         }
         default: {
