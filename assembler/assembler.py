@@ -494,16 +494,10 @@ def main():
 
     tokenised = [x for x in tokenised if x]
 
-    print(tokenised)
-    print(miscTokens)
-
     data = []
 
     for line in tokenised:
         data.append(assemble(line))
-
-    print(data)
-    print(miscTokens)
 
     with open('out.bin', 'wb') as file:
         for line in data:
