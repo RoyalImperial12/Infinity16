@@ -2,6 +2,8 @@
 
 #include <initializer_list>
 #include <thread>
+#include <vector>
+#include <fstream>
 
 i16::cpu i16::CPU;
 i16::memory i16::Memory;
@@ -101,7 +103,21 @@ void execute() {
 }
 
 int main() {
-    memoryInitialise();
+    std::vector<uint8_t> dataBuffer;
+    std::ifstream binFile("..\\out.bin", std::ios::in | std::ios::binary);
+    if (binFile.is_open()) {
+        dataBuffer = std::vector<uint8_t>(std::istreambuf_iterator<char>(binFile), {});
+        binFile.close();
+        int x = 0;
+        for (uint8_t byte : dataBuffer) {
+            i16::Memory.writeByte(x, byte);
+            x++;
+        }
+        dataBuffer.clear();
+    } else {
+        printf("Binary File does not exist, skipping!...\n");
+        memoryInitialise();
+    }
     std::thread monitorThread(monitor);
     std::thread executeThread(execute);
     

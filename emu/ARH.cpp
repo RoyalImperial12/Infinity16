@@ -209,7 +209,7 @@ void NEG(bool word, bool imme, uint8_t main, uint8_t dst, bool hl) {
     i16::sendData(word, hl ? i16::REGISTER_L : i16::REGISTER_H, dst, res);
 }
 
-void RSL(bool word, bool imme, uint8_t main, uint8_t dst, bool hl) {
+void RSL(bool word, uint8_t main, uint8_t dst, bool hl) {
     uint16_t data;
 
     data = i16::getData(word, i16::REGISTER_L, main);
@@ -221,7 +221,7 @@ void RSL(bool word, bool imme, uint8_t main, uint8_t dst, bool hl) {
     i16::sendData(word, hl ? i16::REGISTER_L : i16::REGISTER_H, dst, res);
 }
 
-void RSR(bool word, bool imme, uint8_t main, uint8_t dst, bool hl) {
+void RSR(bool word, uint8_t main, uint8_t dst, bool hl) {
     uint16_t data;
 
     data = i16::getData(word, i16::REGISTER_L, main);
@@ -306,11 +306,11 @@ void i16::ATHexecute(uint16_t op1) {
             break;
         }
         case 0x8: {
-            RSL(OP1_WORD, OP1_IMME, OP2_MAIN, OP2_DST, OP2_HL);
+            RSL(OP1_WORD, OP2_MAIN, OP2_DST, OP2_HL);
             break;
         }
         case 0x9: {
-            RSR(OP1_WORD, OP1_IMME, OP2_MAIN, OP2_DST, OP2_HL);
+            RSR(OP1_WORD, OP2_MAIN, OP2_DST, OP2_HL);
             break;
         }
         case 0xa: {

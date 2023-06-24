@@ -22,21 +22,21 @@ void IN(bool word) {
     uint16_t data;
     if (word) {
         data = tmp;
-        i16::CPU.registers[operands & 0xf000 >> 12] = data;
+        i16::CPU.registers[operands & 0x7800 >> 12] = data;
     } else {
-        data = (operands & 0x800 >> 2) ? tmp << 8 : tmp & 0xff;
-        i16::CPU.registers[operands & 0xf000 >> 12] = (i16::CPU.registers[operands & 0xf000 >> 12] & (operands & 0x800 >> 2) ? 0xff : 0xff00) | data;
+        data = (operands & 0x8000 >> 2) ? tmp << 8 : tmp & 0xff;
+        i16::CPU.registers[operands & 0x7800 >> 12] = (i16::CPU.registers[operands & 0x7800 >> 12] & (operands & 0x8000 >> 2) ? 0xff : 0xff00) | data;
     }
 }
 
 void OUT(bool word) {
     uint16_t operands = i16::Memory.readWord(i16::CPU.registers[i16::IP]); i16::CPU.registers[i16::IP] += 2;
-    uint16_t tmp = i16::CPU.registers[operands & 0xf000 >> 12];
+    uint16_t tmp = i16::CPU.registers[operands & 0x7800 >> 12];
     uint16_t data;
     if (word) {
         data = tmp;
     } else {
-        data = (operands & 0x800 >> 2) ? tmp & 0xff : tmp & 0xff00 >> 8;
+        data = (operands & 0x8000 >> 2) ? tmp & 0xff : tmp & 0xff00 >> 8;
     }
     i16::CPU.ports[(data & 0xff)] = data;
 }
