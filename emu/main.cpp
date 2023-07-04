@@ -4,6 +4,7 @@
 #include <thread>
 #include <vector>
 #include <fstream>
+#include <chrono>
 
 i16::cpu i16::CPU;
 i16::memory i16::Memory;
@@ -25,6 +26,7 @@ bool conditionCheck(uint8_t cond) {
         case 12: { return (i16::CPU.registers[i16::FLAG] & 0x4 >> 2 == i16::CPU.registers[i16::FLAG] & 0x8 >> 3); break; } // SH SL
         case 13: { return (~i16::CPU.registers[i16::FLAG] & 0x2 >> 1 && (i16::CPU.registers[i16::FLAG] & 0x4 >> 2 == i16::CPU.registers[i16::FLAG] & 0x8 >> 3)); break; } // SG
         case 14: { return (i16::CPU.registers[i16::FLAG] & 0x2 >> 1 || (i16::CPU.registers[i16::FLAG] & 0x4 >> 2 != i16::CPU.registers[i16::FLAG] & 0x8 >> 3)); break; } // SU
+        default: { return 1; break; }
     }
 }
 
@@ -37,24 +39,25 @@ void memoryInitialise(std::initializer_list<uint8_t> data = { 0x0 }) {
 }
 
 void monitor() {
-    system("clear");
-    printf("R1: %#hx\nR2: %#hx\nR3: %#hx\nR4: %#hx\nR5: %#hx\nR6: %#hx\nR7: %#hx\nR8: %#hx\nR9: %#hx\nR10: %#hx\nR11: %#hx\nR12: %#hx\nIP: %#x\nBP: %#x\nSP: %#hx\nFLAGS: %#hx", 
-    i16::CPU.registers[i16::R1],
-    i16::CPU.registers[i16::R2],
-    i16::CPU.registers[i16::R3],
-    i16::CPU.registers[i16::R4],
-    i16::CPU.registers[i16::R5],
-    i16::CPU.registers[i16::R6],
-    i16::CPU.registers[i16::R7],
-    i16::CPU.registers[i16::R8],
-    i16::CPU.registers[i16::R9],
-    i16::CPU.registers[i16::R10],
-    i16::CPU.registers[i16::R11],
-    i16::CPU.registers[i16::R12],
-    i16::CPU.registers[i16::IP],
-    i16::CPU.registers[i16::BP],
-    i16::CPU.registers[i16::SP],
-    i16::CPU.registers[i16::FLAG]);
+        system("clear");
+        printf("R1:   0x%.4hx\nR2:   0x%.4hx\nR3:   0x%.4hx\nR4:   0x%.4hx\nR5:   0x%.4hx\nR6:   0x%.4hx\nR7:   0x%.4hx\nR8:   0x%.4hx\nR9:   0x%.4hx\nR10:  0x%.4hx\nR11:  0x%.4hx\nR12:  0x%.4hx\n",
+        i16::CPU.registers[i16::R1],
+        i16::CPU.registers[i16::R2],
+        i16::CPU.registers[i16::R3],
+        i16::CPU.registers[i16::R4],
+        i16::CPU.registers[i16::R5],
+        i16::CPU.registers[i16::R6],
+        i16::CPU.registers[i16::R7],
+        i16::CPU.registers[i16::R8],
+        i16::CPU.registers[i16::R9],
+        i16::CPU.registers[i16::R10],
+        i16::CPU.registers[i16::R11],
+        i16::CPU.registers[i16::R12]);
+        printf("IP:   0x%.6lx\nBP:   0x%.6lx\nSP:   0x%.4x\nFLAG: 0x%.4x\n",
+        i16::CPU.registers[i16::IP],
+        i16::CPU.registers[i16::BP],
+        i16::CPU.registers[i16::SP],
+        i16::CPU.registers[i16::FLAG]);
 } 
 
 void execute() {
@@ -62,8 +65,9 @@ void execute() {
         if ((x == i16::IP || x == i16::BP) && i16::CPU.registers[x] > MAX_ADDRESSABLE_MEMORY) {
             i16::CPU.registers[x] = 0x0;
             continue;
-        }
-        if (i16::CPU.registers[x] > UINT16_MAX) {
+        } else if (x == i16::IP || x == i16::BP) {
+            continue;
+        } else if (i16::CPU.registers[x] > UINT16_MAX) {
             i16::CPU.registers[x] = 0x0;
             continue;
         }
@@ -118,12 +122,16 @@ int main() {
         printf("Binary File does not exist, skipping!...\n");
         memoryInitialise();
     }
-    std::thread monitorThread(monitor);
-    std::thread executeThread(execute);
-    
-    monitorThread.detach();
-    executeThread.join();
 
-    monitorThread.~thread();
+    auto now = std::chrono::steady_clock::now();
+
+    while (1) {
+        auto curTime = std::chrono::steady_clock::now();
+        if (std::chrono::duration_cast<std::chrono::seconds>(curTime - now).count() >= 1) {
+            monitor();
+            now = std::chrono::steady_clock::now();
+        }
+        std::jthread executeThread(execute);
+    }
     return 0;
 }

@@ -16,8 +16,32 @@
 // Namespace Definition
 
 namespace i16 {
-    enum REGISTERS;
-    enum MODES;
+    enum REGISTERS {
+        R1,
+        R2,
+        R3,
+        R4,
+        R5,
+        R6,
+        R7,
+        R8,
+        R9,
+        R10,
+        R11,
+        R12,
+        IP,
+        BP,
+        SP,
+        FLAG
+    };
+
+    enum MODES {
+        REGISTER_H,
+        REGISTER_L,
+        MEMORY,
+        IMMEDIATE,
+        STACK
+    };
 
     class memory;
     class cpu;
@@ -29,39 +53,10 @@ namespace i16 {
     extern void DATexecute(uint16_t);
     extern void ATHexecute(uint16_t);
 
-    uint16_t getData(bool, uint8_t, unsigned int);
+    uint16_t inline getData(bool, uint8_t, unsigned int);
     void sendData(bool, uint8_t, unsigned int, uint16_t);
-    void setFlags(bool, uint16_t, uint16_t = 0);
+    void setFlags(bool, uint32_t, uint16_t = 0);
 }
-
-// Enumeration Definitions
-
-enum i16::REGISTERS {
-    R1,
-    R2,
-    R3,
-    R4,
-    R5,
-    R6,
-    R7,
-    R8,
-    R9,
-    R10,
-    R11,
-    R12,
-    IP,
-    BP,
-    SP,
-    FLAG
-};
-
-enum i16::MODES {
-    REGISTER_H,
-    REGISTER_L,
-    MEMORY,
-    IMMEDIATE,
-    STACK
-};
 
 // Class Definitions
 
@@ -172,6 +167,7 @@ uint16_t inline i16::getData(bool word, uint8_t mode, unsigned int addr) { // Re
             }
         }
     }
+    return 0;
 }
 
 void inline i16::sendData(bool word, uint8_t mode, unsigned int addr, uint16_t data) { // Send Data
