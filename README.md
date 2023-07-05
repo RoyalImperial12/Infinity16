@@ -12,5 +12,5 @@ Please look at the Assembly page on the Wiki before creating an ASM program.
 As of current, the best means to build the emulator is via gcc (or Clang if you prefer). gcc method is as specified below:
 ```
 cd emu
-gcc *.cpp -o i16emu -lstdc++ -std=c++11
+gcc *.cpp -o i16emu -lstdc++ -std=c++20
 ```
